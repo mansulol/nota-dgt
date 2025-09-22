@@ -19,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import checkNote from "@/services/checkNote";
 import translateNotes from "@/services/translateNotes";
 import html2canvas from "html2canvas";
-import type { noteType, examResult } from "@/services/checkNote";
+import type { noteType, examResult } from "@/types/common";
 
 const formSchema = z.object({
   dni: z.string().min(8, "El DNI/NIF debe tener al menos 8 caracteres").max(9, "El DNI/NIF no puede tener más de 9 caracteres"),
@@ -66,9 +66,6 @@ export function ExamConsultationForm() {
 
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
-
-    // // Simulate API call
-    // await new Promise(resolve => setTimeout(resolve, 1500));
 
     const formData: noteType = {
       nifNie: data.dni,
@@ -328,11 +325,11 @@ export function ExamConsultationForm() {
                 </div>
               )}
               <div className="w-full flex pt-4 border-t gap-2">
-                <Button onClick={handleShare} className="flex-1" variant="default">
-                  <Share2 className="w-4 h-4 mr-2" />
+                <Button onClick={handleShare} className="flex flex-1 w-0 gap-1-" variant="default">
+                  <Share2 className="w-4 h-4" />
                   Compartir resultado
                 </Button>
-                <Button onClick={resetForm} className="flex-1" variant="outline">
+                <Button onClick={resetForm} className="flex-1 w-0" variant="outline">
                   Realizar otra consulta
                 </Button>
               </div>
