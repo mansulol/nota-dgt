@@ -162,4 +162,4 @@ function scrapeText(responseData) {
   return resultado;
 }
 
-module.exports = checkNote;
+export default checkNote;
