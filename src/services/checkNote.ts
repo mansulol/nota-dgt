@@ -1,8 +1,23 @@
-export interface noteType{
+export type noteType ={
     nifNie: string;
     clasePermiso: string ;
     fechaNacimiento: string;
     fechaExamen: string;
+}
+
+export type examResult = {
+  nombreApellidos: string;
+  nifNie: string;
+  clasePermiso: string;
+  tipoPrueba: string;
+  fechaExamen: string;
+  calificacionExamen: string;
+  numeroErrores?: number | null;
+  faltas?: {
+    clavesEliminatorias: string[];
+    clavesDeficientes: string[];
+    clavesLeves: string[];
+  };
 }
 
 async function checkNote(values: noteType) {
@@ -137,7 +152,7 @@ function scrapeText(responseData) {
     );
   }
 
-  const resultado = {
+  const resultado: examResult = {
     nombreApellidos: nombreApellidosMatch ? nombreApellidosMatch[1] : null,
     nifNie: nifNie ? nifNie[1] : null,
     clasePermiso: clasePermiso ? clasePermiso[1] : null,

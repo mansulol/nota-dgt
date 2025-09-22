@@ -17,9 +17,9 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import checkNote from "@/services/checkNote";
-import type { noteType } from "@/services/checkNote";
 import translateNotes from "@/services/translateNotes";
 import html2canvas from "html2canvas";
+import type { noteType, examResult } from "@/services/checkNote";
 
 const formSchema = z.object({
   dni: z.string().min(8, "El DNI/NIF debe tener al menos 8 caracteres").max(9, "El DNI/NIF no puede tener más de 9 caracteres"),
@@ -30,21 +30,6 @@ const formSchema = z.object({
 });
 
 type FormData = z.infer<typeof formSchema>;
-
-interface ExamResult {
-  nombreApellidos: string;
-  nifNie: string;
-  clasePermiso: string;
-  tipoPrueba: string;
-  fechaExamen: string;
-  calificacionExamen: string;
-  numeroErrores?: number | null;
-  faltas?: {
-    clavesEliminatorias: string[];
-    clavesDeficientes: string[];
-    clavesLeves: string[];
-  };
-}
 
 const licenseClasses = [
   { value: "AM", label: "AM - Ciclomotores" },
@@ -59,7 +44,7 @@ const licenseClasses = [
 ];
 
 export function ExamConsultationForm() {
-  const [result, setResult] = useState<ExamResult | null>(null);
+  const [result, setResult] = useState<examResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [shareImage, setShareImage] = useState<string | null>(null);
@@ -92,11 +77,16 @@ export function ExamConsultationForm() {
       fechaExamen: format(data.examDate, "dd/MM/yyyy"),
     }
 
-    const notes = await checkNote(formData);
+    let notes: examResult;
 
-    const mockResult: ExamResult = notes
+    try {
+      notes = await checkNote(formData);
+      
+    } catch (error) {
+      throw new Error("Error fetching exam result");
+    }
 
-    setResult(mockResult);
+    setResult(notes);
     setIsLoading(false);
    };
 
@@ -105,7 +95,7 @@ export function ExamConsultationForm() {
     form.reset();
   };
 
-  const ResultCard = (result: ExamResult) => {
+  const ResultCard = (result: examResult) => {
 
     return `
       <style>
@@ -511,6 +501,9 @@ export function ExamConsultationForm() {
                           }
                           initialFocus
                           className="p-3 pointer-events-auto"
+                          captionLayout="dropdown"
+                          fromYear={1900}
+                          toYear={new Date().getFullYear()}
                         />
                       </PopoverContent>
                     </Popover>
@@ -556,6 +549,9 @@ export function ExamConsultationForm() {
                             disabled={(date) => date > new Date()}
                             initialFocus
                             className="p-3 pointer-events-auto"
+                            captionLayout="dropdown"
+                            fromYear={1900}
+                            toYear={new Date().getFullYear()}
                           />
                         </PopoverContent>
                       </Popover>
