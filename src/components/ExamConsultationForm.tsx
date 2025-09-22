@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { CalendarIcon, Search, FileText, Calendar, CreditCard, Car } from "lucide-react";
+import { CalendarIcon, Search, FileText, Calendar, CreditCard, Car, Share2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -106,6 +106,10 @@ export function ExamConsultationForm() {
     setResult(mockResult);
     setIsLoading(false);
   };
+  
+  const handleShare = async () => {
+    
+  }
 
   const resetForm = () => {
     setResult(null);
@@ -128,7 +132,7 @@ export function ExamConsultationForm() {
             </CardHeader>
 
             <CardContent className="space-y-6">
-              <div className="text-center">
+              <div className="text-center gap-4 flex justify-center">
                 <Badge
                   variant={result.calificacionExamen === "APTO" ? "default" : "destructive"}
                   className={cn(
@@ -137,6 +141,9 @@ export function ExamConsultationForm() {
                   )}
                 >
                   {result.calificacionExamen === "APTO" ? "✓ APTO" : "✗ NO APTO"}
+                </Badge>
+                <Badge className=" bg-transparent text-lg p-2 font-semibold" >
+                  <Share2 className=" text-black " onClick={handleShare} />
                 </Badge>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
