@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { CalendarIcon, Search, FileText, Calendar, CreditCard } from "lucide-react";
+import { CalendarIcon, Search, FileText, Calendar, CreditCard, Car, Share2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,10 +15,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import checkNote from "@/services/checkNote";
+import translateNotes from "@/services/translateNotes";
 
 const formSchema = z.object({
   dni: z.string().min(8, "El DNI/NIF debe tener al menos 8 caracteres").max(9, "El DNI/NIF no puede tener más de 9 caracteres"),
   licenseClass: z.string().min(1, "Selecciona una clase de permiso"),
+  examType: z.enum(["theory", "practical"], { required_error: "Selecciona el tipo de examen" }),
   birthDate: z.date({ required_error: "La fecha de nacimiento es obligatoria" }),
   examDate: z.date({ required_error: "La fecha del examen es obligatoria" }),
 });
@@ -26,16 +29,17 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 interface ExamResult {
-  dni: string;
-  name: string;
-  licenseClass: string;
-  examDate: string;
-  passed: boolean;
-  score: number;
-  maxScore: number;
-  details: {
-    theory: number;
-    practical?: number;
+  nombreApellidos: string;
+  nifNie: string;
+  clasePermiso: string;
+  tipoPrueba: string;
+  fechaExamen: string;
+  calificacionExamen: string;
+  numeroErrores?: number | null;
+  faltas?: {
+    clavesEliminatorias: string[];
+    clavesDeficientes: string[];
+    clavesLeves: string[];
   };
 }
 
@@ -60,6 +64,7 @@ export function ExamConsultationForm() {
     defaultValues: {
       dni: "",
       licenseClass: "",
+      examType: "theory",
     },
   });
 
@@ -69,32 +74,42 @@ export function ExamConsultationForm() {
 
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
-    
+
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
+
     // Mock result generation
     const passed = Math.random() > 0.3; // 70% success rate
     const theoryScore = Math.floor(Math.random() * 15) + 15; // 15-30
     const practicalScore = data.licenseClass === "AM" ? undefined : Math.floor(Math.random() * 20) + 10; // 10-30
-    
+
     const mockResult: ExamResult = {
-      dni: data.dni.toUpperCase(),
-      name: "Juan García López", // Mock name
-      licenseClass: data.licenseClass,
-      examDate: format(data.examDate, "dd/MM/yyyy", { locale: es }),
-      passed,
-      score: theoryScore + (practicalScore || 0),
-      maxScore: practicalScore ? 60 : 30,
-      details: {
-        theory: theoryScore,
-        practical: practicalScore,
-      },
+      nombreApellidos: 'Doe, John',
+      nifNie: '12345678A',
+      clasePermiso: 'B',
+      tipoPrueba: 'CIRCULACIÓN',
+      fechaExamen: '04/08/2025',
+      calificacionExamen: 'NO APTO',
+      numeroErrores: null,
+      faltas: {
+        clavesEliminatorias: [],
+        clavesDeficientes: ['4.3', '4.4'],
+        clavesLeves: [
+          '13.1.5', '13.1.5',
+          '13.1.8', '13.2.2',
+          '13.2.2', '4.4',
+          '5.2', '5.2', '5.2',
+        ]
+      }
     };
-    
+
     setResult(mockResult);
     setIsLoading(false);
   };
+  
+  const handleShare = async () => {
+    
+  }
 
   const resetForm = () => {
     setResult(null);
@@ -103,99 +118,146 @@ export function ExamConsultationForm() {
 
   if (result) {
     return (
-      <div className="w-full max-w-2xl mx-auto space-y-6">
-        <Card className="shadow-elevated border-0 bg-gradient-to-br from-card to-card/80">
-          <CardHeader className="text-center pb-4">
-            <div className="mx-auto w-16 h-16 rounded-full bg-gradient-primary flex items-center justify-center mb-4">
-              <FileText className="w-8 h-8 text-primary-foreground" />
-            </div>
-            <CardTitle className="text-2xl">Resultado del Examen</CardTitle>
-            <CardDescription className="text-base">
-              Permiso de conducir clase {result.licenseClass}
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent className="space-y-6">
-            <div className="text-center">
-              <Badge 
-                variant={result.passed ? "default" : "destructive"}
-                className={cn(
-                  "text-lg px-6 py-2 font-semibold",
-                  result.passed ? "bg-success hover:bg-success/90" : ""
-                )}
-              >
-                {result.passed ? "✓ APTO" : "✗ NO APTO"}
-              </Badge>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Nombre</label>
-                  <p className="font-semibold">{result.name}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">DNI/NIF</label>
-                  <p className="font-semibold">{result.dni}</p>
-                </div>
+      <section className="w-full flex flex-col md:gap-4 lg:gap-6">
+        <div className="w-full md:w-4/6 max-w-screen-xl bg-transparent mx-auto space-y-6">
+          <Card className="shadow-elevated border-0 bg-gradient-to-br from-card to-card/80">
+            <CardHeader className="text-center pb-4">
+              <div className="mx-auto w-16 h-16 rounded-full bg-gradient-primary flex items-center justify-center mb-4">
+                <FileText className="w-8 h-8 text-primary-foreground" />
               </div>
-              
-              <div className="space-y-3">
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Fecha del examen</label>
-                  <p className="font-semibold">{result.examDate}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Puntuación</label>
-                  <p className="font-semibold">{result.score}/{result.maxScore} puntos</p>
-                </div>
-              </div>
-            </div>
+              <CardTitle className="text-2xl">Resultado del Examen</CardTitle>
+              <CardDescription className="text-base">
+                Permiso de conducir clase {result.clasePermiso} - Examen {result.tipoPrueba}
+              </CardDescription>
+            </CardHeader>
 
-            <div className="space-y-3">
-              <h4 className="font-semibold">Desglose de calificaciones:</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="p-3 bg-muted rounded-lg">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">Examen teórico</span>
-                    <span className="font-semibold">{result.details.theory}/30</span>
+            <CardContent className="space-y-6">
+              <div className="text-center gap-4 flex justify-center">
+                <Badge
+                  variant={result.calificacionExamen === "APTO" ? "default" : "destructive"}
+                  className={cn(
+                    "text-lg px-6 py-2 font-semibold",
+                    result.calificacionExamen === "APTO" ? "bg-success hover:bg-success/90" : ""
+                  )}
+                >
+                  {result.calificacionExamen === "APTO" ? "✓ APTO" : "✗ NO APTO"}
+                </Badge>
+                <Badge className=" bg-transparent text-lg p-2 font-semibold" >
+                  <Share2 className=" text-black " onClick={handleShare} />
+                </Badge>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Nombre</label>
+                    <p className="font-semibold">{result.nombreApellidos.toUpperCase()}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">DNI/NIF</label>
+                    <p className="font-semibold">{result.nifNie}</p>
                   </div>
                 </div>
-                {result.details.practical && (
-                  <div className="p-3 bg-muted rounded-lg">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Examen práctico</span>
-                      <span className="font-semibold">{result.details.practical}/30</span>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Fecha del examen</label>
+                    <p className="font-semibold">{result.fechaExamen}</p>
+                  </div>
+                  {result.numeroErrores !== null && (
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Número de errores</label>
+                      <p className="font-semibold">{result.numeroErrores}</p>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
+              {result.faltas && (
+                <div className="space-y-3">
+                  <h4 className="font-semibold">Faltas cometidas:</h4>
+                  <div className="space-y-2">
 
-            <div className="pt-4 border-t">
-              <Button onClick={resetForm} className="w-full" variant="outline">
-                Realizar otra consulta
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+                    <div>
+                      <label className="text-sm font-medium text-red-600">Graves</label>
+                      <p className="font-semibold">{result.faltas.clavesEliminatorias.join(', ')}</p>
+                    </div>
+
+
+                    <div>
+                      <label className="text-sm font-medium text-orange-600">Deficientes</label>
+                      <p className="font-semibold">{result.faltas.clavesDeficientes.join(', ')}</p>
+                    </div>
+
+
+                    <div>
+                      <label className="text-sm font-medium text-yellow-600">Leves</label>
+                      <p className="font-semibold">{result.faltas.clavesLeves.join(', ')}</p>
+                    </div>
+
+                  </div>
+                </div>
+              )}
+              <div className="pt-4 border-t">
+                <Button onClick={resetForm} className="w-full" variant="outline">
+                  Realizar otra consulta
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="w-full flex flex-col lg:flex-row gap-6 bg-transparent pt-6 items-start justify-center" >
+          <Card className="w-full lg:w-96 bg-gray-300 shadow-elevated border-0 bg-gradient-to-br from-card to-card/80" >
+            <CardHeader className="text-2xl" > Faltas Eliminatorias </CardHeader>
+            <CardContent className="flex flex-col gap-6" >
+              {
+                translateNotes(result.faltas?.clavesEliminatorias || []).map((note, index) => (
+                  <span key={index}>
+                    <Badge className="m-1" variant="secondary">{note}</Badge>
+                  </span>
+                ))
+              }
+            </CardContent>
+          </Card>
+
+          <Card className="w-full lg:w-96 bg-gray-200 shadow-elevated border-0 bg-gradient-to-br from-card to-card/80" >
+            <CardHeader className="text-2xl" > Faltas Deficientes </CardHeader>
+            <CardContent className="flex flex-col gap-6" >
+              {
+                translateNotes(result.faltas?.clavesDeficientes || []).map((note, index) => (
+                  <span key={index}>
+                    <Badge className="m-1" variant="secondary">{note}</Badge>
+                  </span>
+                ))
+              }
+            </CardContent>
+          </Card>
+
+          <Card className="w-full lg:w-96 bg-gray-200 shadow-elevated border-0 bg-gradient-to-br from-card to-card/80" >
+            <CardHeader className="text-2xl" > Faltas Leves </CardHeader>
+            <CardContent className="flex flex-col gap-6" >
+              {
+                translateNotes(result.faltas?.clavesLeves || []).map((note, index) => (
+                  <span key={index}>
+                    <Badge className="m-1" variant="secondary">{note}</Badge>
+                  </span>
+                ))
+              }
+            </CardContent>
+          </Card>
+        </div>
+      </section>
     );
   }
 
   return (
-    <div className="w-full max-w-lg mx-auto">
+    <div className="w-full md:w-4/6 max-w-screen-xl mx-auto">
       <Card className="shadow-elevated border-0 bg-gradient-to-br from-card to-card/80">
         <CardHeader className="text-center pb-6">
           <div className="mx-auto w-16 h-16 rounded-full bg-gradient-primary flex items-center justify-center mb-4">
             <Search className="w-8 h-8 text-primary-foreground" />
           </div>
           <CardTitle className="text-2xl">Consulta de Examen</CardTitle>
-          <CardDescription className="text-base">
-            Consulta el resultado de tu examen de conducir
-          </CardDescription>
         </CardHeader>
-        
+
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -209,9 +271,9 @@ export function ExamConsultationForm() {
                       DNI/NIF
                     </FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="12345678A" 
-                        {...field} 
+                      <Input
+                        placeholder="12345678A"
+                        {...field}
                         className="transition-smooth focus:shadow-lg"
                         onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                       />
@@ -344,9 +406,9 @@ export function ExamConsultationForm() {
                 )}
               />
 
-              <Button 
-                type="submit" 
-                className="w-full bg-gradient-primary hover:opacity-90 transition-smooth shadow-lg" 
+              <Button
+                type="submit"
+                className="w-full bg-gradient-primary hover:opacity-90 transition-smooth shadow-lg"
                 disabled={isLoading}
                 size="lg"
               >
