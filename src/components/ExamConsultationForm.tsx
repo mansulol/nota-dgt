@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useRef, Ref } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { CalendarIcon, Search, FileText, Calendar, CreditCard, Car, Share2 } from "lucide-react";
+import { CalendarIcon, Search, FileText, Calendar, CreditCard, Car, Share2, ImageDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -17,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import checkNote from "@/services/checkNote";
 import translateNotes from "@/services/translateNotes";
+import html2canvas from "html2canvas";
 
 const formSchema = z.object({
   dni: z.string().min(8, "El DNI/NIF debe tener al menos 8 caracteres").max(9, "El DNI/NIF no puede tener más de 9 caracteres"),
@@ -58,6 +60,10 @@ const licenseClasses = [
 export function ExamConsultationForm() {
   const [result, setResult] = useState<ExamResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [shareImage, setShareImage] = useState<string | null>(null);
+  const [shareHtml, setShareHtml] = useState<string | null>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -105,20 +111,131 @@ export function ExamConsultationForm() {
 
     setResult(mockResult);
     setIsLoading(false);
-  };
-  
-  const handleShare = async () => {
-    
-  }
+   };
 
   const resetForm = () => {
     setResult(null);
     form.reset();
   };
 
+  const ResultCard = (result: ExamResult) => {
+
+    return `
+      <section className="bg-gray-100 p-4">
+    <div className="bg-[#4b6c9d] text-white font-bold uppercase text-center py-3 px-6 mb-6 rounded-t-lg">
+      RESULTADO NOTAS DE EXÁMENES
+    </div>
+
+    <div className="bg-gray-200 rounded-lg shadow-md p-6 max-w-4xl mx-auto">
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="flex items-center">
+          <span className="font-bold text-gray-800">Apellidos, Nombre:</span>
+          <span className="ml-2 text-gray-700">Lo Lo, Mansour</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="flex items-center">
+          <span className="font-bold text-gray-800">Clase de Permiso:</span>
+          <span className="ml-2 text-gray-700">B</span>
+        </div>
+        <div className="flex items-center">
+          <span className="font-bold text-gray-800">Tipo de Prueba:</span>
+          <span className="ml-2 text-gray-700">Circulación</span>
+        </div>
+        <div className="flex items-center">
+          <span className="font-bold text-gray-800">Fecha de Examen:</span>
+          <span className="ml-2 text-gray-700">22/09/2025</span>
+        </div>
+        <div className="flex items-center">
+          <span className="font-bold text-gray-800">Calificación Examen:</span>
+          <span className="ml-2 text-red-700 font-bold">NO APTO</span>
+        </div>
+      </div>
+
+      <div className="w-full overflow-x-auto">
+        <div className="bg-[#7f9dbb] text-white font-bold text-center py-2 px-4 mb-2">
+          FALTAS COMETIDAS
+        </div>
+        <table className="w-full border-collapse">
+          <thead>
+            <tr>
+              <th className="bg-[#7f9dbb] text-white font-bold text-center py-2 border-b border-gray-300">Claves Eliminatorias</th>
+              <th className="bg-[#7f9dbb] text-white font-bold text-center py-2 border-b border-gray-300">Claves Deficientes</th>
+              <th className="bg-[#7f9dbb] text-white font-bold text-center py-2 border-b border-gray-300">Claves Leves</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="p-3 text-center border-b border-gray-300">11.5.1</td>
+              <td className="p-3 text-center border-b border-gray-300">7.6</td>
+              <td className="p-3 text-center border-b border-gray-300">13.1.2 - 7.2 - 7.3</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+    `;
+  };
+
+  const handleShare = async () => {
+    if (result) {
+      const html = ResultCard(result);
+      setShareHtml(html);
+
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html;
+      tempDiv.style.position = 'absolute';
+      tempDiv.style.left = '-9999px';
+      tempDiv.style.top = '-9999px';
+      tempDiv.style.width = '32rem';
+      document.body.appendChild(tempDiv);
+
+      const canvas = await html2canvas(tempDiv, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        width: 512,
+        height: tempDiv.scrollHeight,
+      });
+
+      document.body.removeChild(tempDiv);
+
+      const image = canvas.toDataURL('image/png');
+      setShareImage(image);
+      setShareModalOpen(true);
+    }
+  };
+
+  const downloadImage = (dataUrl: string) => {
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = 'resultado-examen.png';
+    link.click();
+  };
+
+  const shareResult = async (dataUrl: string) => {
+    if (navigator.share) {
+      try {
+        const blob = await fetch(dataUrl).then(r => r.blob());
+        const file = new File([blob], 'resultado-examen.png', { type: 'image/png' });
+        await navigator.share({
+          title: 'Resultado del Examen DGT',
+          files: [file],
+        });
+      } catch (error) {
+        console.error('Error sharing:', error);
+        downloadImage(dataUrl);
+      }
+    } else {
+      downloadImage(dataUrl);
+    }
+  };
+
   if (result) {
     return (
-      <section className="w-full flex flex-col md:gap-4 lg:gap-6">
+      <div>
+        <section className="w-full flex flex-col md:gap-4 lg:gap-6">
         <div className="w-full md:w-4/6 max-w-screen-xl bg-transparent mx-auto space-y-6">
           <Card className="shadow-elevated border-0 bg-gradient-to-br from-card to-card/80">
             <CardHeader className="text-center pb-4">
@@ -141,9 +258,6 @@ export function ExamConsultationForm() {
                   )}
                 >
                   {result.calificacionExamen === "APTO" ? "✓ APTO" : "✗ NO APTO"}
-                </Badge>
-                <Badge className=" bg-transparent text-lg p-2 font-semibold" >
-                  <Share2 className=" text-black " onClick={handleShare} />
                 </Badge>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -195,8 +309,12 @@ export function ExamConsultationForm() {
                   </div>
                 </div>
               )}
-              <div className="pt-4 border-t">
-                <Button onClick={resetForm} className="w-full" variant="outline">
+              <div className="pt-4 border-t flex gap-2">
+                <Button onClick={handleShare} className="flex-1" variant="default">
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Compartir resultado
+                </Button>
+                <Button onClick={resetForm} className="flex-1" variant="outline">
                   Realizar otra consulta
                 </Button>
               </div>
@@ -245,6 +363,28 @@ export function ExamConsultationForm() {
           </Card>
         </div>
       </section>
+
+      <Dialog open={shareModalOpen} onOpenChange={setShareModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Compartir Resultado</DialogTitle>
+          </DialogHeader>
+          {shareImage && (
+            <div className="space-y-4">
+              <img src={shareImage} alt="Resultado del examen" className="w-full rounded" />
+              <div className="flex gap-2">
+                <Button onClick={() => downloadImage(shareImage)} className="flex-1">
+                     <ImageDown /> Descargar
+                </Button>
+                <Button onClick={() => shareResult(shareImage)} className="flex-1" variant="outline">
+                  <Share2 /> Compartir
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+      </div>
     );
   }
 
@@ -426,8 +566,8 @@ export function ExamConsultationForm() {
               </Button>
             </form>
           </Form>
-        </CardContent>
-      </Card>
-    </div>
+            </CardContent>
+          </Card>
+        </div>
   );
 }
