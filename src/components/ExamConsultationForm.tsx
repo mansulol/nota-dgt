@@ -17,6 +17,7 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import checkNote from "@/services/checkNote";
+import type { noteType } from "@/services/checkNote";
 import translateNotes from "@/services/translateNotes";
 import html2canvas from "html2canvas";
 
@@ -81,33 +82,19 @@ export function ExamConsultationForm() {
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // // Simulate API call
+    // await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // Mock result generation
-    const passed = Math.random() > 0.3; // 70% success rate
-    const theoryScore = Math.floor(Math.random() * 15) + 15; // 15-30
-    const practicalScore = data.licenseClass === "AM" ? undefined : Math.floor(Math.random() * 20) + 10; // 10-30
+    const formData: noteType = {
+      nifNie: data.dni,
+      clasePermiso: data.licenseClass,
+      fechaNacimiento: format(data.birthDate, "dd/MM/yyyy"),
+      fechaExamen: format(data.examDate, "dd/MM/yyyy"),
+    }
 
-    const mockResult: ExamResult = {
-      nombreApellidos: 'Doe, John',
-      nifNie: '12345678A',
-      clasePermiso: 'B',
-      tipoPrueba: 'CIRCULACIÓN',
-      fechaExamen: '04/08/2025',
-      calificacionExamen: 'NO APTO',
-      numeroErrores: null,
-      faltas: {
-        clavesEliminatorias: [],
-        clavesDeficientes: ['4.3', '4.4'],
-        clavesLeves: [
-          '13.1.5', '13.1.5',
-          '13.1.8', '13.2.2',
-          '13.2.2', '4.4',
-          '5.2', '5.2', '5.2',
-        ]
-      }
-    };
+    const notes = await checkNote(formData);
+
+    const mockResult: ExamResult = notes
 
     setResult(mockResult);
     setIsLoading(false);
@@ -121,61 +108,102 @@ export function ExamConsultationForm() {
   const ResultCard = (result: ExamResult) => {
 
     return `
-      <section className="bg-gray-100 p-4">
-    <div className="bg-[#4b6c9d] text-white font-bold uppercase text-center py-3 px-6 mb-6 rounded-t-lg">
-      RESULTADO NOTAS DE EXÁMENES
-    </div>
+      <style>
+    body {
+      font-family: 'Arial', sans-serif;
+    }
+    .header {
+      background-color: #4b6c9d;
+      color: white;
+      padding: 12px 20px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .table-header {
+      background-color: #7f9dbb;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .table-row {
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+    .label {
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-right: 10px;
+    }
+    .info-text {
+      font-size: 0.9rem;
+      color: #333;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 p-4">
+  <!-- Header -->
+  <div class="header mb-4">
+    RESULTADO NOTAS DE EXÁMENES
+  </div>
 
-    <div className="bg-gray-200 rounded-lg shadow-md p-6 max-w-4xl mx-auto">
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="flex items-center">
-          <span className="font-bold text-gray-800">Apellidos, Nombre:</span>
-          <span className="ml-2 text-gray-700">Lo Lo, Mansour</span>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="flex items-center">
-          <span className="font-bold text-gray-800">Clase de Permiso:</span>
-          <span className="ml-2 text-gray-700">B</span>
-        </div>
-        <div className="flex items-center">
-          <span className="font-bold text-gray-800">Tipo de Prueba:</span>
-          <span className="ml-2 text-gray-700">Circulación</span>
-        </div>
-        <div className="flex items-center">
-          <span className="font-bold text-gray-800">Fecha de Examen:</span>
-          <span className="ml-2 text-gray-700">22/09/2025</span>
-        </div>
-        <div className="flex items-center">
-          <span className="font-bold text-gray-800">Calificación Examen:</span>
-          <span className="ml-2 text-red-700 font-bold">NO APTO</span>
-        </div>
-      </div>
-
-      <div className="w-full overflow-x-auto">
-        <div className="bg-[#7f9dbb] text-white font-bold text-center py-2 px-4 mb-2">
-          FALTAS COMETIDAS
-        </div>
-        <table className="w-full border-collapse">
-          <thead>
-            <tr>
-              <th className="bg-[#7f9dbb] text-white font-bold text-center py-2 border-b border-gray-300">Claves Eliminatorias</th>
-              <th className="bg-[#7f9dbb] text-white font-bold text-center py-2 border-b border-gray-300">Claves Deficientes</th>
-              <th className="bg-[#7f9dbb] text-white font-bold text-center py-2 border-b border-gray-300">Claves Leves</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="p-3 text-center border-b border-gray-300">11.5.1</td>
-              <td className="p-3 text-center border-b border-gray-300">7.6</td>
-              <td className="p-3 text-center border-b border-gray-300">13.1.2 - 7.2 - 7.3</td>
-            </tr>
-          </tbody>
-        </table>
+  <!-- Main Content -->
+  <div class="bg-gray-200 rounded-lg shadow-md p-6 max-w-4xl mx-auto">
+    <!-- Personal Info -->
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <div class="flex">
+        <span class="font-bold text-gray-800">Apellidos, Nombre:</span>
+        <span class="ml-2">Lo Lo, Mansour</span>
       </div>
     </div>
-  </section>
+
+    <!-- Exam Info -->
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <div class="flex">
+        <span class="font-bold text-gray-800">Clase de Permiso:</span>
+        <span class="ml-2">B</span>
+      </div>
+      <div class="flex">
+        <span class="font-bold text-gray-800">Tipo de Prueba:</span>
+        <span class="ml-2">Circulación</span>
+      </div>
+      <div class="flex">
+        <span class="font-bold text-gray-800">Fecha de Examen:</span>
+        <span class="ml-2">22/09/2025</span>
+      </div>
+      <div class="flex">
+        <span class="font-bold text-gray-800">Calificación Examen:</span>
+        <span class="ml-2 text-red-700 font-bold">NO APTO</span>
+      </div>
+    </div>
+
+    <!-- Faults Table -->
+    <div class="w-full overflow-x-auto">
+      <div class="table-header">
+        FALTAS COMETIDAS
+      </div>
+      <table class="w-full border-collapse">
+        <thead>
+          <tr>
+            <th class="table-header">Claves Eliminatorias</th>
+            <th class="table-header">Claves Deficientes</th>
+            <th class="table-header">Claves Leves</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-t border-gray-300">
+            <td class="p-3 text-center">11.5.1</td>
+            <td class="p-3 text-center">7.6</td>
+            <td class="p-3 text-center">13.1.2 - 7.2 - 7.3</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
     `;
   };
 
@@ -309,7 +337,7 @@ export function ExamConsultationForm() {
                   </div>
                 </div>
               )}
-              <div className="pt-4 border-t flex gap-2">
+              <div className="w-full flex pt-4 border-t gap-2">
                 <Button onClick={handleShare} className="flex-1" variant="default">
                   <Share2 className="w-4 h-4 mr-2" />
                   Compartir resultado
@@ -365,7 +393,7 @@ export function ExamConsultationForm() {
       </section>
 
       <Dialog open={shareModalOpen} onOpenChange={setShareModalOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Compartir Resultado</DialogTitle>
           </DialogHeader>

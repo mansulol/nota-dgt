@@ -1,4 +1,4 @@
-interface noteType{
+export interface noteType{
     nifNie: string;
     clasePermiso: string ;
     fechaNacimiento: string;
