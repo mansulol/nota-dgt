@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 const formSchema = z.object({
   dni: z.string().min(8, "El DNI/NIF debe tener al menos 8 caracteres").max(9, "El DNI/NIF no puede tener más de 9 caracteres"),
   licenseClass: z.string().min(1, "Selecciona una clase de permiso"),
+  examType: z.enum(["theory", "practical"], { required_error: "Selecciona el tipo de examen" }),
   birthDate: z.date({ required_error: "La fecha de nacimiento es obligatoria" }),
   examDate: z.date({ required_error: "La fecha del examen es obligatoria" }),
 });
@@ -70,7 +71,8 @@ export function ExamConsultationForm() {
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
     
-    // Simulate API call
+      // Simulate API call delay
+      
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     // Mock result generation
@@ -80,7 +82,7 @@ export function ExamConsultationForm() {
     
     const mockResult: ExamResult = {
       dni: data.dni.toUpperCase(),
-      name: "Juan García López", // Mock name
+      name: "Juan García López",
       licenseClass: data.licenseClass,
       examDate: format(data.examDate, "dd/MM/yyyy", { locale: es }),
       passed,
@@ -191,9 +193,6 @@ export function ExamConsultationForm() {
             <Search className="w-8 h-8 text-primary-foreground" />
           </div>
           <CardTitle className="text-2xl">Consulta de Examen</CardTitle>
-          <CardDescription className="text-base">
-            Consulta el resultado de tu examen de conducir
-          </CardDescription>
         </CardHeader>
         
         <CardContent>
