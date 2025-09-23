@@ -77,26 +77,26 @@ export function ExamConsultationForm() {
     let notes: examResult;
 
     try {
-      // notes = await checkNote(formData);
-       notes = {
-         nombreApellidos: 'Doe, John',
-         nifNie: '12345678A',
-         clasePermiso: 'B',
-         tipoPrueba: 'CIRCULACIÓN',
-         fechaExamen: '04/08/2025',
-         calificacionExamen: 'NO APTO',
-         numeroErrores: null,
-         faltas: {
-           clavesEliminatorias: [],
-           clavesDeficientes: ['4.3', '4.4'],
-           clavesLeves: [
-             '13.1.5', '13.1.5',
-             '13.1.8', '13.2.2',
-             '13.2.2', '4.4',
-             '5.2', '5.2', '5.2',
-           ]
-         }
-       };
+      notes = await checkNote(formData);
+      //  notes = {
+      //    nombreApellidos: 'Doe, John',
+      //    nifNie: '12345678A',
+      //    clasePermiso: 'B',
+      //    tipoPrueba: 'CIRCULACIÓN',
+      //    fechaExamen: '04/08/2025',
+      //    calificacionExamen: 'NO APTO',
+      //    numeroErrores: null,
+      //    faltas: {
+      //      clavesEliminatorias: [],
+      //      clavesDeficientes: ['4.3', '4.4'],
+      //      clavesLeves: [
+      //        '13.1.5', '13.1.5',
+      //        '13.1.8', '13.2.2',
+      //        '13.2.2', '4.4',
+      //        '5.2', '5.2', '5.2',
+      //      ]
+      //    }
+      //  };
 
     } catch (error) {
       throw new Error("Error fetching exam result");
@@ -405,19 +405,14 @@ export function ExamConsultationForm() {
   };
 
   const shareResult = async (dataUrl: string) => {
-    console.log('Intentando compartir...');
 
-    // Verificar si la Web Share API está disponible
     if (navigator.share) {
-      console.log('Web Share API disponible');
 
       try {
         const blob = await fetch(dataUrl).then(r => r.blob());
         const file = new File([blob], 'resultado-examen-dgt.png', { type: 'image/png' });
 
-        console.log('Archivo creado:', file);
 
-        // Intentar compartir con archivo
         const shareData = {
           title: 'Resultado del Examen DGT',
           text: 'Mira el resultado de mi examen de conducir',
@@ -425,13 +420,9 @@ export function ExamConsultationForm() {
           files: [file],
         };
 
-        // Verificar si puede compartir archivos (si canShare está disponible)
         if (navigator.canShare && navigator.canShare(shareData)) {
-          console.log('Compartiendo con archivo...');
           await navigator.share(shareData);
         } else {
-          console.log('canShare no disponible o no soporta archivos, intentando sin archivos...');
-          // Fallback: compartir solo texto y URL
           await navigator.share({
             title: 'Resultado del Examen DGT',
             text: 'Mira el resultado de mi examen de conducir',
@@ -439,18 +430,12 @@ export function ExamConsultationForm() {
           });
         }
 
-        console.log('Compartido exitosamente');
       } catch (error) {
-        console.error('Error al compartir:', error);
-        // Si el usuario canceló, no es un error real
         if (error.name !== 'AbortError') {
-          console.log('Haciendo fallback a descarga...');
           downloadImage(dataUrl);
         }
       }
     } else {
-      console.log('Web Share API no disponible, descargando imagen...');
-      // Fallback para navegadores que no soportan Web Share API
       downloadImage(dataUrl);
     }
   };
