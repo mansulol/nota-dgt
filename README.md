@@ -51,3 +51,5 @@ Una vez ejecutados los servidores:
 ## ⚠️ Solución CORS
 
 Esta aplicación incluye un servidor backend que actúa como proxy para evitar problemas de CORS al hacer peticiones a la API de la DGT.
+
+

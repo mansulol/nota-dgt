@@ -1,7 +1,9 @@
 import type { noteType } from "@/types/common";
 
 async function checkNote(values: noteType) {
+
   const url = "http://localhost:3001/api/check-note";
+
 
   const headers = {
     "Content-Type": "application/x-www-form-urlencoded",
