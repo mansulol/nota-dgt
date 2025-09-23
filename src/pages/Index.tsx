@@ -57,8 +57,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="w-full bg-white border-t py-4">
         <div className="container mx-auto px-4 gap-2 flex justify-center text-center">
-          <a href="" className="text-sm text-muted-foreground hover:text-foreground">Política de privacidad</a>
-          <a href="" className="text-sm text-muted-foreground hover:text-foreground">Terminos y condiciones</a>
+          <a href="/privacy-policy" className="text-sm to-blue-950 text-muted-foreground hover:text-foreground">Política de privacidad y aviso legal</a>
         </div>
       </footer>
     </div>
