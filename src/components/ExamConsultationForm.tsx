@@ -78,14 +78,14 @@ export function ExamConsultationForm() {
 
     try {
       notes = await checkNote(formData);
-      
+
     } catch (error) {
       throw new Error("Error fetching exam result");
     }
 
     setResult(notes);
     setIsLoading(false);
-   };
+  };
 
   const resetForm = () => {
     setResult(null);
@@ -94,101 +94,257 @@ export function ExamConsultationForm() {
 
   const ResultCard = (result: examResult) => {
 
-    return `
+    if (!result.faltas) {
+      return `
       <style>
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
+      background-color: #f3f4f6;
+      margin: 0;
+      padding: 16px;
     }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+      background-color: #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 24px;
+    }
+
+    /* Header */
     .header {
       background-color: #4b6c9d;
       color: white;
-      padding: 12px 20px;
+      text-align: center;
+      font-size: 16px;
       font-weight: bold;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      padding: 12px;
+      border-radius: 8px 8px 0 0;
     }
+
+    /* Personal Info and Exam Info */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+    }
+
+    .info-item span:first-child {
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    /* Table */
     .table-header {
       background-color: #7f9dbb;
       color: white;
-      font-weight: bold;
       text-align: center;
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-    }
-    .table-row {
-      border-bottom: 1px solid #ddd;
-      padding: 10px 0;
-    }
-    .label {
       font-weight: bold;
-      text-transform: uppercase;
-      margin-right: 10px;
+      padding: 12px;
+      margin-bottom: 8px;
     }
-    .info-text {
-      font-size: 0.9rem;
-      color: #333;
-      line-height: 1.5;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      text-align: center;
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #7f9dbb;
+      color: white;
     }
   </style>
 </head>
-<body class="bg-gray-100 p-4">
+<body>
   <!-- Header -->
-  <div class="header mb-4">
-    RESULTADO NOTAS DE EXÁMENES
-  </div>
+  <div class="header">RESULTADO NOTAS DE EXÁMENES</div>
 
   <!-- Main Content -->
-  <div class="bg-gray-200 rounded-lg shadow-md p-6 max-w-4xl mx-auto">
+  <div class="container">
     <!-- Personal Info -->
-    <div class="grid grid-cols-2 gap-4 mb-6">
-      <div class="flex">
-        <span class="font-bold text-gray-800">Apellidos, Nombre:</span>
-        <span class="ml-2">Lo Lo, Mansour</span>
+    <div class="info-grid">
+      <div class="info-item">
+        <span>Apellidos, Nombre:</span>
+        <span>${result.nombreApellidos}</span>
       </div>
     </div>
 
     <!-- Exam Info -->
-    <div class="grid grid-cols-2 gap-4 mb-6">
-      <div class="flex">
-        <span class="font-bold text-gray-800">Clase de Permiso:</span>
-        <span class="ml-2">B</span>
+    <div class="info-grid">
+      <div class="info-item">
+        <span>Clase de Permiso:</span>
+        <span>${result.clasePermiso}</span>
       </div>
-      <div class="flex">
-        <span class="font-bold text-gray-800">Tipo de Prueba:</span>
-        <span class="ml-2">Circulación</span>
+      <div class="info-item">
+        <span>Tipo de Prueba:</span>
+        <span>${result.tipoPrueba}</span>
       </div>
-      <div class="flex">
-        <span class="font-bold text-gray-800">Fecha de Examen:</span>
-        <span class="ml-2">22/09/2025</span>
+      <div class="info-item">
+        <span>Fecha de Examen:</span>
+        <span>${result.fechaExamen}</span>
       </div>
-      <div class="flex">
-        <span class="font-bold text-gray-800">Calificación Examen:</span>
-        <span class="ml-2 text-red-700 font-bold">NO APTO</span>
+      <div class="info-item">
+        <span>Calificación Examen:</span>
+        <span style="color: red; font-weight: bold;">${result.calificacionExamen}</span>
+      </div>
+      <div class="info-item">
+        <span>Numero de errores:</span>
+        <span>${result.numeroErrores!}</span>
+      </div>
+    </div>
+</body>
+    `;
+    };
+
+
+    return `
+      <style>
+    /* General Styles */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f4f6;
+      margin: 0;
+      padding: 16px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+      background-color: #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 24px;
+    }
+
+    /* Header */
+    .header {
+      background-color: #4b6c9d;
+      color: white;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      text-transform: uppercase;
+      padding: 12px;
+      border-radius: 8px 8px 0 0;
+    }
+
+    /* Personal Info and Exam Info */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+    }
+
+    .info-item span:first-child {
+      font-weight: bold;
+      margin-right: 8px;
+    }
+
+    /* Table */
+    .table-header {
+      background-color: #7f9dbb;
+      color: white;
+      text-align: center;
+      font-weight: bold;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      text-align: center;
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #7f9dbb;
+      color: white;
+    }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">RESULTADO NOTAS DE EXÁMENES</div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Personal Info -->
+    <div class="info-grid">
+      <div class="info-item">
+        <span>Apellidos, Nombre:</span>
+        <span>${result.nombreApellidos}</span>
+      </div>
+    </div>
+
+    <!-- Exam Info -->
+    <div class="info-grid">
+      <div class="info-item">
+        <span>Clase de Permiso:</span>
+        <span>${result.clasePermiso}</span>
+      </div>
+      <div class="info-item">
+        <span>Tipo de Prueba:</span>
+        <span>${result.tipoPrueba}</span>
+      </div>
+      <div class="info-item">
+        <span>Fecha de Examen:</span>
+        <span>${result.fechaExamen}</span>
+      </div>
+      <div class="info-item">
+        <span>Calificación Examen:</span>
+        <span style="color: red; font-weight: bold;">${result.calificacionExamen}</span>
       </div>
     </div>
 
     <!-- Faults Table -->
-    <div class="w-full overflow-x-auto">
-      <div class="table-header">
-        FALTAS COMETIDAS
-      </div>
-      <table class="w-full border-collapse">
-        <thead>
-          <tr>
-            <th class="table-header">Claves Eliminatorias</th>
-            <th class="table-header">Claves Deficientes</th>
-            <th class="table-header">Claves Leves</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-t border-gray-300">
-            <td class="p-3 text-center">11.5.1</td>
-            <td class="p-3 text-center">7.6</td>
-            <td class="p-3 text-center">13.1.2 - 7.2 - 7.3</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <div class="table-header">FALTAS COMETIDAS</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Claves Eliminatorias</th>
+          <th>Claves Deficientes</th>
+          <th>Claves Leves</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>${result.faltas!.clavesEliminatorias.join(' - ')}</td>
+          <td>${result.faltas!.clavesDeficientes.join(' - ')}</td>
+          <td>${result.faltas!.clavesLeves.join(' - ')}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </body>
     `;
@@ -251,154 +407,154 @@ export function ExamConsultationForm() {
     return (
       <div>
         <section className="w-full flex flex-col md:gap-4 lg:gap-6">
-        <div className="w-full md:w-4/6 max-w-screen-xl bg-transparent mx-auto space-y-6">
-          <Card className="shadow-elevated border-0 bg-gradient-to-br from-card to-card/80">
-            <CardHeader className="text-center pb-4">
-              <div className="mx-auto w-16 h-16 rounded-full bg-gradient-primary flex items-center justify-center mb-4">
-                <FileText className="w-8 h-8 text-primary-foreground" />
-              </div>
-              <CardTitle className="text-2xl">Resultado del Examen</CardTitle>
-              <CardDescription className="text-base">
-                Permiso de conducir clase {result.clasePermiso} - Examen {result.tipoPrueba}
-              </CardDescription>
-            </CardHeader>
+          <div className="w-full md:w-4/6 max-w-screen-xl bg-transparent mx-auto space-y-6">
+            <Card className="shadow-elevated border-0 bg-gradient-to-br from-card to-card/80">
+              <CardHeader className="text-center pb-4">
+                <div className="mx-auto w-16 h-16 rounded-full bg-gradient-primary flex items-center justify-center mb-4">
+                  <FileText className="w-8 h-8 text-primary-foreground" />
+                </div>
+                <CardTitle className="text-2xl">Resultado del Examen</CardTitle>
+                <CardDescription className="text-base">
+                  Permiso de conducir clase {result.clasePermiso} - Examen {result.tipoPrueba}
+                </CardDescription>
+              </CardHeader>
 
-            <CardContent className="space-y-6">
-              <div className="text-center gap-4 flex justify-center">
-                <Badge
-                  variant={result.calificacionExamen === "APTO" ? "default" : "destructive"}
-                  className={cn(
-                    "text-lg px-6 py-2 font-semibold",
-                    result.calificacionExamen === "APTO" ? "bg-success hover:bg-success/90" : ""
-                  )}
-                >
-                  {result.calificacionExamen === "APTO" ? "✓ APTO" : "✗ NO APTO"}
-                </Badge>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Nombre</label>
-                    <p className="font-semibold">{result.nombreApellidos.toUpperCase()}</p>
+              <CardContent className="space-y-6">
+                <div className="text-center gap-4 flex justify-center">
+                  <Badge
+                    variant={result.calificacionExamen === "APTO" ? "default" : "destructive"}
+                    className={cn(
+                      "text-lg px-6 py-2 font-semibold",
+                      result.calificacionExamen === "APTO" ? "bg-success hover:bg-success/90" : ""
+                    )}
+                  >
+                    {result.calificacionExamen === "APTO" ? "✓ APTO" : "✗ NO APTO"}
+                  </Badge>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Nombre</label>
+                      <p className="font-semibold">{result.nombreApellidos.toUpperCase()}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">DNI/NIF</label>
+                      <p className="font-semibold">{result.nifNie}</p>
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">DNI/NIF</label>
-                    <p className="font-semibold">{result.nifNie}</p>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-sm font-medium text-muted-foreground">Fecha del examen</label>
+                      <p className="font-semibold">{result.fechaExamen}</p>
+                    </div>
+                    {result.numeroErrores !== null && (
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">Número de errores</label>
+                        <p className="font-semibold">{result.numeroErrores}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Fecha del examen</label>
-                    <p className="font-semibold">{result.fechaExamen}</p>
-                  </div>
-                  {result.numeroErrores !== null && (
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Número de errores</label>
-                      <p className="font-semibold">{result.numeroErrores}</p>
+                {result.faltas && (
+                  <div className="space-y-3">
+                    <h4 className="font-semibold">Faltas cometidas:</h4>
+                    <div className="space-y-2">
+
+                      <div>
+                        <label className="text-sm font-medium text-red-600">Graves</label>
+                        <p className="font-semibold">{result.faltas.clavesEliminatorias.join(', ')}</p>
+                      </div>
+
+
+                      <div>
+                        <label className="text-sm font-medium text-orange-600">Deficientes</label>
+                        <p className="font-semibold">{result.faltas.clavesDeficientes.join(', ')}</p>
+                      </div>
+
+
+                      <div>
+                        <label className="text-sm font-medium text-yellow-600">Leves</label>
+                        <p className="font-semibold">{result.faltas.clavesLeves.join(', ')}</p>
+                      </div>
+
                     </div>
-                  )}
+                  </div>
+                )}
+                <div className="w-full flex pt-4 border-t gap-2">
+                  <Button onClick={handleShare} className="flex flex-1 w-0 gap-1 sm:text-sm" variant="default">
+                    <Share2 className="w-4 h-4" />
+                    Compartir resultado
+                  </Button>
+                  <Button onClick={resetForm} className="flex-1 w-0 sm:text-sm" variant="outline">
+                    Realizar otra consulta
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="w-full flex flex-col lg:flex-row gap-6 bg-transparent pt-6 items-start justify-center" >
+            <Card className="w-full lg:w-96 bg-gray-300 shadow-elevated border-0 bg-gradient-to-br from-card to-card/80" >
+              <CardHeader className="text-2xl" > Faltas Eliminatorias </CardHeader>
+              <CardContent className="flex flex-col gap-6" >
+                {
+                  translateNotes(result.faltas?.clavesEliminatorias || []).map((note, index) => (
+                    <span key={index}>
+                      <Badge className="m-1" variant="secondary">{note}</Badge>
+                    </span>
+                  ))
+                }
+              </CardContent>
+            </Card>
+
+            <Card className="w-full lg:w-96 bg-gray-200 shadow-elevated border-0 bg-gradient-to-br from-card to-card/80" >
+              <CardHeader className="text-2xl" > Faltas Deficientes </CardHeader>
+              <CardContent className="flex flex-col gap-6" >
+                {
+                  translateNotes(result.faltas?.clavesDeficientes || []).map((note, index) => (
+                    <span key={index}>
+                      <Badge className="m-1" variant="secondary">{note}</Badge>
+                    </span>
+                  ))
+                }
+              </CardContent>
+            </Card>
+
+            <Card className="w-full lg:w-96 bg-gray-200 shadow-elevated border-0 bg-gradient-to-br from-card to-card/80" >
+              <CardHeader className="text-2xl" > Faltas Leves </CardHeader>
+              <CardContent className="flex flex-col gap-6" >
+                {
+                  translateNotes(result.faltas?.clavesLeves || []).map((note, index) => (
+                    <span key={index}>
+                      <Badge className="m-1" variant="secondary">{note}</Badge>
+                    </span>
+                  ))
+                }
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        <Dialog open={shareModalOpen} onOpenChange={setShareModalOpen}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Compartir Resultado</DialogTitle>
+            </DialogHeader>
+            {shareImage && (
+              <div className="space-y-4">
+                <img src={shareImage} alt="Resultado del examen" className="w-full rounded" />
+                <div className="flex gap-2">
+                  <Button onClick={() => downloadImage(shareImage)} className="flex-1">
+                    <ImageDown /> Descargar
+                  </Button>
+                  <Button onClick={() => shareResult(shareImage)} className="flex-1" variant="outline">
+                    <Share2 /> Compartir
+                  </Button>
                 </div>
               </div>
-              {result.faltas && (
-                <div className="space-y-3">
-                  <h4 className="font-semibold">Faltas cometidas:</h4>
-                  <div className="space-y-2">
-
-                    <div>
-                      <label className="text-sm font-medium text-red-600">Graves</label>
-                      <p className="font-semibold">{result.faltas.clavesEliminatorias.join(', ')}</p>
-                    </div>
-
-
-                    <div>
-                      <label className="text-sm font-medium text-orange-600">Deficientes</label>
-                      <p className="font-semibold">{result.faltas.clavesDeficientes.join(', ')}</p>
-                    </div>
-
-
-                    <div>
-                      <label className="text-sm font-medium text-yellow-600">Leves</label>
-                      <p className="font-semibold">{result.faltas.clavesLeves.join(', ')}</p>
-                    </div>
-
-                  </div>
-                </div>
-              )}
-              <div className="w-full flex pt-4 border-t gap-2">
-                <Button onClick={handleShare} className="flex flex-1 w-0 gap-1-" variant="default">
-                  <Share2 className="w-4 h-4" />
-                  Compartir resultado
-                </Button>
-                <Button onClick={resetForm} className="flex-1 w-0" variant="outline">
-                  Realizar otra consulta
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="w-full flex flex-col lg:flex-row gap-6 bg-transparent pt-6 items-start justify-center" >
-          <Card className="w-full lg:w-96 bg-gray-300 shadow-elevated border-0 bg-gradient-to-br from-card to-card/80" >
-            <CardHeader className="text-2xl" > Faltas Eliminatorias </CardHeader>
-            <CardContent className="flex flex-col gap-6" >
-              {
-                translateNotes(result.faltas?.clavesEliminatorias || []).map((note, index) => (
-                  <span key={index}>
-                    <Badge className="m-1" variant="secondary">{note}</Badge>
-                  </span>
-                ))
-              }
-            </CardContent>
-          </Card>
-
-          <Card className="w-full lg:w-96 bg-gray-200 shadow-elevated border-0 bg-gradient-to-br from-card to-card/80" >
-            <CardHeader className="text-2xl" > Faltas Deficientes </CardHeader>
-            <CardContent className="flex flex-col gap-6" >
-              {
-                translateNotes(result.faltas?.clavesDeficientes || []).map((note, index) => (
-                  <span key={index}>
-                    <Badge className="m-1" variant="secondary">{note}</Badge>
-                  </span>
-                ))
-              }
-            </CardContent>
-          </Card>
-
-          <Card className="w-full lg:w-96 bg-gray-200 shadow-elevated border-0 bg-gradient-to-br from-card to-card/80" >
-            <CardHeader className="text-2xl" > Faltas Leves </CardHeader>
-            <CardContent className="flex flex-col gap-6" >
-              {
-                translateNotes(result.faltas?.clavesLeves || []).map((note, index) => (
-                  <span key={index}>
-                    <Badge className="m-1" variant="secondary">{note}</Badge>
-                  </span>
-                ))
-              }
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      <Dialog open={shareModalOpen} onOpenChange={setShareModalOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Compartir Resultado</DialogTitle>
-          </DialogHeader>
-          {shareImage && (
-            <div className="space-y-4">
-              <img src={shareImage} alt="Resultado del examen" className="w-full rounded" />
-              <div className="flex gap-2">
-                <Button onClick={() => downloadImage(shareImage)} className="flex-1">
-                     <ImageDown /> Descargar
-                </Button>
-                <Button onClick={() => shareResult(shareImage)} className="flex-1" variant="outline">
-                  <Share2 /> Compartir
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
@@ -587,8 +743,8 @@ export function ExamConsultationForm() {
               </Button>
             </form>
           </Form>
-            </CardContent>
-          </Card>
-        </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
