@@ -1,4 +1,13 @@
-# Consulta Nota DGT
+
+| <img  src="assets/screenshots/home-form.png" /> | <img  src="assets/screenshots/home-form-result.png" /> | <img  src="assets/screenshots/home-exam-code.png" /> |
+| --- | --- | --- |
+
+
+<p align="center">
+<b>Mi Nota DGT</b>
+<br />
+Consulta tus notas de examenes de conducir
+</p>
 
 Aplicación web para consultar las notas de exámenes de la DGT (Dirección General de Tráfico) de España.
 
