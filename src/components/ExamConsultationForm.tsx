@@ -77,7 +77,26 @@ export function ExamConsultationForm() {
     let notes: examResult;
 
     try {
-      notes = await checkNote(formData);
+      // notes = await checkNote(formData);
+       notes = {
+         nombreApellidos: 'Doe, John',
+         nifNie: '12345678A',
+         clasePermiso: 'B',
+         tipoPrueba: 'CIRCULACIÓN',
+         fechaExamen: '04/08/2025',
+         calificacionExamen: 'NO APTO',
+         numeroErrores: null,
+         faltas: {
+           clavesEliminatorias: [],
+           clavesDeficientes: ['4.3', '4.4'],
+           clavesLeves: [
+             '13.1.5', '13.1.5',
+             '13.1.8', '13.2.2',
+             '13.2.2', '4.4',
+             '5.2', '5.2', '5.2',
+           ]
+         }
+       };
 
     } catch (error) {
       throw new Error("Error fetching exam result");
@@ -360,14 +379,14 @@ export function ExamConsultationForm() {
       tempDiv.style.position = 'absolute';
       tempDiv.style.left = '-9999px';
       tempDiv.style.top = '-9999px';
-      tempDiv.style.width = '32rem';
+      tempDiv.style.width = '40rem';
       document.body.appendChild(tempDiv);
 
       const canvas = await html2canvas(tempDiv, {
         backgroundColor: '#ffffff',
         scale: 2,
-        width: 512,
-        height: tempDiv.scrollHeight,
+        width: 650,
+        height: 400,
       });
 
       document.body.removeChild(tempDiv);
@@ -536,7 +555,7 @@ export function ExamConsultationForm() {
         </section>
 
         <Dialog open={shareModalOpen} onOpenChange={setShareModalOpen}>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Compartir Resultado</DialogTitle>
             </DialogHeader>
