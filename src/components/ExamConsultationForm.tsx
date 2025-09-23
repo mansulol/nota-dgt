@@ -16,6 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import checkNote from "@/services/checkNote";
 import translateNotes from "@/services/translateNotes";
 import html2canvas from "html2canvas";
@@ -49,6 +50,7 @@ export function ExamConsultationForm() {
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [shareImage, setShareImage] = useState<string | null>(null);
   const [shareHtml, setShareHtml] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const resultRef = useRef<HTMLDivElement>(null);
 
   const form = useForm<FormData>({
@@ -66,6 +68,7 @@ export function ExamConsultationForm() {
 
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
+    setError(null);
 
     const formData: noteType = {
       nifNie: data.dni,
@@ -99,7 +102,16 @@ export function ExamConsultationForm() {
       //  };
 
     } catch (error) {
-      throw new Error("Error fetching exam result");
+      setError("No se pudo consultar el resultado. Verifica que los datos sean correctos y que el examen haya sido realizado.");
+      setIsLoading(false);
+      return;
+    }
+
+    // Check if result has data
+    if (!notes.nombreApellidos) {
+      setError("No se encontró el resultado del examen. Verifica que los datos sean correctos y que el examen haya sido realizado.");
+      setIsLoading(false);
+      return;
     }
 
     setResult(notes);
@@ -108,6 +120,7 @@ export function ExamConsultationForm() {
 
   const resetForm = () => {
     setResult(null);
+    setError(null);
     form.reset();
   };
 
@@ -760,25 +773,30 @@ export function ExamConsultationForm() {
                 )}
               />
 
-              <Button
-                type="submit"
-                className="w-full bg-gradient-primary hover:opacity-90 transition-smooth shadow-lg"
-                disabled={isLoading}
-                size="lg"
-              >
-                {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                    Consultando...
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <Search className="w-4 h-4" />
-                    Consultar resultado
-                  </div>
-                )}
-              </Button>
-            </form>
+               <Button
+                 type="submit"
+                 className="w-full bg-gradient-primary hover:opacity-90 transition-smooth shadow-lg"
+                 disabled={isLoading}
+                 size="lg"
+               >
+                 {isLoading ? (
+                   <div className="flex items-center gap-2">
+                     <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                     Consultando...
+                   </div>
+                 ) : (
+                   <div className="flex items-center gap-2">
+                     <Search className="w-4 h-4" />
+                     Consultar resultado
+                   </div>
+                 )}
+               </Button>
+               {error && (
+                 <Alert variant="destructive">
+                   <AlertDescription>{error}</AlertDescription>
+                 </Alert>
+               )}
+             </form>
           </Form>
         </CardContent>
       </Card>
