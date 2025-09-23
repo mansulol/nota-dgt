@@ -1,7 +1,7 @@
 import type { noteType } from "@/types/common";
 
 async function checkNote(values: noteType) {
-  const url = "/api/check-note";
+  const url = import.meta.env.VITE_URL_EDGE_API ;
 
   const headers = {
     "Content-Type": "application/x-www-form-urlencoded",
