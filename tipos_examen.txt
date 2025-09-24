@@ -1,0 +1,49 @@
+Para cada tipo de carnet de conducir de la DGT, hay varios exámenes que debes superar, y la información que sueltan se divide en tres categorías principales: **teórico común**, **teórico específico** y **práctico**.
+
+---
+
+### Exámenes para Licencias de Ciclomotores y Motocicletas
+
+En el caso de las licencias de **AM**, **A1**, **A2** y **A**, los exámenes se enfocan en la seguridad vial de los vehículos de dos ruedas y sus particularidades.
+
+* **AM**:
+    * **Teórico Específico**: Trata sobre las normas de circulación, la seguridad vial y los elementos técnicos de los ciclomotores.
+    * **Práctico**: En un circuito cerrado, se evalúa la destreza del aspirante en maniobras de equilibrio y control del vehículo a baja velocidad.
+* **A1**:
+    * **Teórico Común**: Similar al del carnet B.
+    * **Teórico Específico**: Contiene preguntas sobre la conducción de motocicletas de hasta 125cc.
+    * **Práctico en Circuito Cerrado**: Se evalúan habilidades como el equilibrio, el zigzag y la frenada de emergencia. 
+    * **Práctico en Vías Abiertas**: Se evalúa la conducción en tráfico real, la aplicación de normas y la seguridad.
+* **A2**:
+    * **Teórico Común**: Solo si no tienes el carnet B.
+    * **Teórico Específico**: Si no tienes el A1. Se centra en el manejo de motocicletas de hasta 35kW.
+    * **Práctico en Circuito Cerrado**: Similar al del A1, pero con una motocicleta de mayor potencia.
+    * **Práctico en Vías Abiertas**: Conducción en vías públicas con la motocicleta adecuada.
+* **A**:
+    * Este carnet se obtiene sin examen, solo con **cursos de formación** presenciales en autoescuelas, tras tener al menos **dos años de experiencia** con el carnet A2.
+
+---
+
+### Exámenes para Licencias de Turismos
+
+El carnet **B** para turismos es el más común y consta de dos exámenes principales.
+
+* **Teórico**: Un examen tipo test de 30 preguntas sobre normativa de tráfico, señalización, seguridad vial y primeros auxilios.
+* **Práctico**: Se realiza en vías abiertas al tráfico, donde el examinador evalúa la habilidad del conductor para manejar el vehículo, circular de forma segura, respetar las normas y reaccionar ante situaciones imprevistas. 
+
+---
+
+### Exámenes para Licencias de Vehículos Pesados
+
+Las licencias para camiones y autobuses (**C1**, **C**, **D1**, **D**) requieren una preparación más exhaustiva debido a la complejidad de los vehículos y la responsabilidad de transportar mercancías o personas.
+
+* **C1 y C**:
+    * **Teórico Común**: Si no tienes el carnet B.
+    * **Teórico Específico**: Aborda temas como la normativa de transporte, los tiempos de conducción y descanso, la carga y descarga, y los elementos técnicos de los camiones.
+    * **Práctico en Circuito Cerrado**: Se evalúan maniobras de estacionamiento, acoplamiento de remolques y otras habilidades específicas.
+    * **Práctico en Vías Abiertas**: Conducción del camión en diferentes entornos, incluyendo carreteras y zonas urbanas, evaluando la seguridad y la aplicación de las normas.
+* **D1 y D**:
+    * **Teórico Común**: Si no tienes el carnet B.
+    * **Teórico Específico**: Se enfoca en el transporte de pasajeros, la seguridad de los viajeros, el uso de sistemas de freno específicos para autobuses y la normativa del sector.
+    * **Práctico en Circuito Cerrado**: Maniobras específicas con autobuses, como la marcha atrás en curva o el estacionamiento.
+    * **Práctico en Vías Abiertas**: Conducción del autobús en rutas urbanas e interurbanas, con énfasis en la seguridad de los pasajeros y el manejo del vehículo en diferentes condiciones.

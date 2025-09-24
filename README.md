@@ -1,4 +1,13 @@
-# Consulta Nota DGT
+
+| <img  src="assets/screenshots/home-form.png" /> | <img  src="assets/screenshots/home-form-result.png" /> | <img  src="assets/screenshots/home-exam-code.png" /> |
+| --- | --- | --- |
+
+
+<p align="center">
+<b>Mi Nota DGT</b>
+<br />
+Consulta tus notas de examenes de conducir
+</p>
 
 Aplicación web para consultar las notas de exámenes de la DGT (Dirección General de Tráfico) de España.
 
@@ -51,41 +60,3 @@ Una vez ejecutados los servidores:
 ## ⚠️ Solución CORS
 
 Esta aplicación incluye un servidor backend que actúa como proxy para evitar problemas de CORS al hacer peticiones a la API de la DGT.
-
-## 🚀 Despliegue en producción
-
-### Vercel (Recomendado)
-1. **Instala Vercel CLI:**
-```bash
-npm i -g vercel
-```
-
-2. **Despliega:**
-```bash
-vercel
-```
-
-3. **Sigue las instrucciones** para conectar tu repositorio de GitHub
-
-**Nota importante:** El scraping de la DGT puede ser bloqueado por servicios de hosting. Si no funciona, considera usar Railway o Render para el backend.
-
-### Otras opciones
-- **Railway**: Para full-stack (frontend + backend)
-- **Render**: Para el backend, frontend en Vercel/Netlify
-- **Heroku**: Para full-stack (puede ser más caro)
-
-### ⚠️ Limitaciones del despliegue
-- **Scraping bloqueado**: Algunos servicios de hosting bloquean el scraping web
-- **IPs bloqueadas**: La DGT puede detectar y bloquear IPs de hosting
-- **Rate limiting**: Los servicios de hosting pueden tener límites de peticiones
-
-### 🔧 Estructura del proyecto
-```
-nota-dgt/
-├── api/                 # Funciones serverless (Vercel)
-│   └── check-note.js
-├── src/                 # Código fuente React
-├── dist/                # Build de producción
-├── vercel.json         # Configuración Vercel
-└── server.js           # Servidor local (desarrollo)
-```
